@@ -1,0 +1,7 @@
+fun bad(): Int {
+    return true
+}
+
+fun main(): Unit {
+    println(1)
+}

@@ -1,0 +1,87 @@
+fun fib(n: Int): Int {
+    if (n <= 1) {
+        return n
+    } else {
+        return fib(n - 1) + fib(n - 2)
+    }
+}
+
+fun gcd(a: Int, b: Int): Int {
+    var x: Int = a
+    var y: Int = b
+    while (y != 0) {
+        var t: Int = x % y
+        x = y
+        y = t
+    }
+    return x
+}
+
+fun weighted(limit: Int): Int {
+    var i: Int = 1
+    var acc: Int = 0
+    while (i <= limit) {
+        if ((i % 2) == 0) {
+            acc = acc + (i * 3)
+        } else {
+            acc = acc + i
+        }
+        i = i + 1
+    }
+    return acc
+}
+
+fun choose(flag: Boolean, left: String, right: String): String {
+    if (flag) {
+        return left
+    } else {
+        return right
+    }
+}
+
+fun trace(tag: String, value: Boolean): Boolean {
+    println(tag)
+    return value
+}
+
+fun banner(name: String, score: Int, ok: Boolean): String {
+    return "name=" + name + ",score=" + score + ",ok=" + ok
+}
+
+fun main(): Unit {
+    var v: Int = fib(6)
+    println(v)
+    v = gcd(84, 18)
+    println(v)
+    v = weighted(5)
+    println(v)
+
+    var label: String = choose((v == 27) && trace("label-check", true), "good", "bad")
+    println(label)
+
+    var flag: Boolean = false && trace("and-right-skipped", true)
+    println(flag)
+    flag = true || trace("or-right-skipped", false)
+    println(flag)
+    flag = true && trace("and-executed", true)
+    println(flag)
+    flag = false || trace("or-executed", true)
+    println(flag)
+
+    var text: String = banner("mini", v, flag)
+    println(text)
+
+    v = fib(4) + gcd(81, 18) + weighted(3)
+    println(v)
+
+    var i: Int = 1
+    while (i <= 4) {
+        if ((i % 2) == 0) {
+            v = v + (i * 2)
+        } else {
+            v = v + i
+        }
+        i = i + 1
+    }
+    println(v)
+}

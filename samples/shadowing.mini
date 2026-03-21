@@ -1,0 +1,10 @@
+fun main(): Unit {
+    var x: Int = 1
+    if (true) {
+        var x: Int = 2
+        println(x)
+    } else {
+        println(0)
+    }
+    println(x)
+}

@@ -1,0 +1,14 @@
+8
+6
+27
+label-check
+good
+false
+true
+and-executed
+true
+or-executed
+true
+name=mini,score=27,ok=true
+22
+38

@@ -1,0 +1,2 @@
+Compile error must contain:
+has return type Int but returned Boolean

@@ -1,0 +1,18 @@
+fun classify(n: Int): Int {
+    if (n > 0) {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+fun main(): Unit {
+    var i: Int = 1
+    var acc: Int = 0
+    while (i <= 4) {
+        acc = acc + i
+        i = i + 1
+    }
+    println(acc)
+    println(classify(acc))
+}

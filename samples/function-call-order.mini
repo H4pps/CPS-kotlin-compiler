@@ -1,0 +1,13 @@
+fun id(x: Int): Int {
+    println(x)
+    return x
+}
+
+fun sum(a: Int, b: Int): Int {
+    return a + b
+}
+
+fun main(): Unit {
+    var result: Int = sum(id(1), id(2))
+    println(result)
+}

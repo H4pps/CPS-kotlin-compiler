@@ -1,0 +1,13 @@
+fun sideEffect(x: Int): Boolean {
+    println(999)
+    return x > 0
+}
+
+fun main(): Unit {
+    var a: Boolean = false && sideEffect(1)
+    var b: Boolean = true || sideEffect(1)
+    var c: Boolean = !(1 + 2 * 3 == 7)
+    println(a)
+    println(b)
+    println(c)
+}

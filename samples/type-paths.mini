@@ -1,0 +1,14 @@
+fun describe(n: Int): String {
+    return "value=" + n
+}
+
+fun emit(flag: Boolean): Unit {
+    println(flag)
+    return
+}
+
+fun main(): Unit {
+    var s: String = describe(5)
+    emit(s == "value=5")
+    println(s)
+}
