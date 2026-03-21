@@ -1,0 +1,2 @@
+ExecutionResult failure must contain:
+No main method found in class
