@@ -75,7 +75,6 @@ public static void main(String[] args) {
 }
 ```
 
-
 ## Building and Running
 
 ```bash
@@ -95,3 +94,80 @@ public static void main(String[] args) {
 ## Evaluation
 
 The task will be tested on a hidden set of tests.
+
+## What Is Implemented
+
+- Compiler: ANTLR visitor, MiniKotlin -> Java CPS.
+- Passes:
+  1. collect function signatures
+  2. emit Java code
+- Generated function shape: `public static void fn(..., Continuation<T> __continuation)`.
+- JVM entrypoint bridge is generated only for `fun main(): Unit`.
+- Example (`samples/example.mini`):
+
+```kotlin
+fun factorial(n: Int): Int {
+    if (n <= 1) {
+        return 1
+    } else {
+        return n * factorial(n - 1)
+    }
+}
+
+fun main(): Unit {
+    var result: Int = factorial(5)
+    println(result)
+
+    var a: Int = 10 + 5
+    var b: Boolean = a > 10
+    println(a)
+}
+```
+
+- Transpiled Java:
+
+```java
+public class MiniProgram {
+  public static void main(String[] args) {
+    main((__mainDone) -> {
+    });
+  }
+
+  public static void factorial(Integer n, Continuation<Integer> __continuation) {
+    Ref<Integer> __ref_n_0 = new Ref<>(n);
+    if ((__ref_n_0.value <= 1)) {
+      __continuation.accept(1);
+      return;
+    } else {
+      factorial((__ref_n_0.value - 1), (__arg_factorialResult_0) -> {
+        __continuation.accept((__ref_n_0.value * __arg_factorialResult_0));
+        return;
+      });
+    }
+  }
+
+  public static void main(Continuation<Void> __continuation) {
+    factorial(5, (__arg_factorialResult_0) -> {
+      Ref<Integer> __ref_result_0 = new Ref<>(__arg_factorialResult_0);
+      Prelude.println(__ref_result_0.value, (__arg_printlnDone_1) -> {
+        Ref<Integer> __ref_a_1 = new Ref<>((10 + 5));
+        Ref<Boolean> __ref_b_2 = new Ref<>((__ref_a_1.value > 10));
+        Prelude.println(__ref_a_1.value, (__arg_printlnDone_2) -> {
+          __continuation.accept(null);
+          return;
+        });
+      });
+    });
+  }
+
+  private static final class Ref<T> {
+    private T value;
+
+    private Ref(T value) {
+      this.value = value;
+    }
+  }
+}
+```
+- Note: `Ref<T>` is used so MiniKotlin `var` stays mutable inside continuation lambdas, because Java lambdas capture only effectively-final locals.
+- Checks: unknown function, wrong arity, type mismatch (assign/return/args), invalid `Unit` value usage.
