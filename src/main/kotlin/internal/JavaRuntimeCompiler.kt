@@ -11,12 +11,15 @@ import javax.tools.JavaFileObject
 import javax.tools.ToolProvider
 
 class JavaRuntimeCompiler {
-
-    fun compile(sourceFile: Path, stdlibPath: Path? = null): CompilationResult {
-        val compiler = ToolProvider.getSystemJavaCompiler()
-            ?: return CompilationResult.Failure(
-                listOf(CompilationError(0, 0, "Java compiler not available. Ensure JDK is installed."))
-            )
+    fun compile(
+        sourceFile: Path,
+        stdlibPath: Path? = null,
+    ): CompilationResult {
+        val compiler =
+            ToolProvider.getSystemJavaCompiler()
+                ?: return CompilationResult.Failure(
+                    listOf(CompilationError(0, 0, "Java compiler not available. Ensure JDK is installed.")),
+                )
 
         val diagnostics = DiagnosticCollector<JavaFileObject>()
         val fileManager = compiler.getStandardFileManager(diagnostics, null, null)
@@ -33,28 +36,30 @@ class JavaRuntimeCompiler {
 
         val compilationUnits = fileManager.getJavaFileObjects(sourceFile.toFile())
 
-        val task = compiler.getTask(
-            null,
-            fileManager,
-            diagnostics,
-            options,
-            null,
-            compilationUnits
-        )
+        val task =
+            compiler.getTask(
+                null,
+                fileManager,
+                diagnostics,
+                options,
+                null,
+                compilationUnits,
+            )
 
         val success = task.call()
         fileManager.close()
 
         if (!success) {
-            val errors = diagnostics.diagnostics
-                .filter { it.kind == Diagnostic.Kind.ERROR }
-                .map { diagnostic ->
-                    CompilationError(
-                        line = diagnostic.lineNumber,
-                        column = diagnostic.columnNumber,
-                        message = diagnostic.getMessage(null)
-                    )
-                }
+            val errors =
+                diagnostics.diagnostics
+                    .filter { it.kind == Diagnostic.Kind.ERROR }
+                    .map { diagnostic ->
+                        CompilationError(
+                            line = diagnostic.lineNumber,
+                            column = diagnostic.columnNumber,
+                            message = diagnostic.getMessage(null),
+                        )
+                    }
             return CompilationResult.Failure(errors)
         }
 
@@ -69,11 +74,14 @@ class JavaRuntimeCompiler {
         return CompilationResult.Success(
             className = className,
             classLoader = classLoader,
-            compiledClass = compiledClass
+            compiledClass = compiledClass,
         )
     }
 
-    fun execute(compilationResult: CompilationResult.Success, args: Array<String> = emptyArray()): ExecutionResult {
+    fun execute(
+        compilationResult: CompilationResult.Success,
+        args: Array<String> = emptyArray(),
+    ): ExecutionResult {
         val oldOut = System.out
         val oldErr = System.err
 
@@ -89,18 +97,18 @@ class JavaRuntimeCompiler {
 
             ExecutionResult.Success(
                 stdout = outCapture.toString(),
-                stderr = errCapture.toString()
+                stderr = errCapture.toString(),
             )
         } catch (e: NoSuchMethodException) {
             ExecutionResult.Failure(
                 error = "No main method found in class ${compilationResult.className}",
-                exception = e
+                exception = e,
             )
         } catch (e: Exception) {
             val cause = e.cause ?: e
             ExecutionResult.Failure(
                 error = cause.message ?: "Unknown execution error",
-                exception = cause
+                exception = cause,
             )
         } finally {
             System.setOut(oldOut)
@@ -111,7 +119,7 @@ class JavaRuntimeCompiler {
     fun compileAndExecute(
         sourceFile: Path,
         stdlibPath: Path? = null,
-        args: Array<String> = emptyArray()
+        args: Array<String> = emptyArray(),
     ): Pair<CompilationResult, ExecutionResult?> {
         val compilationResult = compile(sourceFile, stdlibPath)
 
@@ -126,15 +134,19 @@ class JavaRuntimeCompiler {
         }
     }
 
-    private fun extractClassName(sourceContent: String, fileName: String): String {
+    private fun extractClassName(
+        sourceContent: String,
+        fileName: String,
+    ): String {
         val packageRegex = Regex("""package\s+([\w.]+)\s*;""")
         val classRegex = Regex("""public\s+class\s+(\w+)""")
 
         val packageMatch = packageRegex.find(sourceContent)
         val classMatch = classRegex.find(sourceContent)
 
-        val simpleClassName = classMatch?.groupValues?.get(1)
-            ?: fileName.removeSuffix(".java")
+        val simpleClassName =
+            classMatch?.groupValues?.get(1)
+                ?: fileName.removeSuffix(".java")
 
         return if (packageMatch != null) {
             "${packageMatch.groupValues[1]}.$simpleClassName"
