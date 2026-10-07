@@ -1,7 +1,5 @@
 # MiniKotlin to Java CPS Compiler
 
-This is an internship assignment for implementing a CPS-style (Continuation-Passing Style) compiler from MiniKotlin (a subset of Kotlin) to Java.
-
 ## Overview
 
 The goal is to implement a compiler that translates MiniKotlin source code into Java, where all functions are expressed using continuation-passing style.
